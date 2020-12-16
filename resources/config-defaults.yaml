@@ -1,0 +1,91 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: config-defaults
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: >
+      {"apiVersion":"v1","data":{"_example":"################################\n#                             
+      #\n#    EXAMPLE CONFIGURATION     #\n#                             
+      #\n################################\n\n# This block is not actually
+      functional configuration,\n# but serves to illustrate the available
+      configuration\n# options and document them in a way that is accessible\n#
+      to users that `kubectl edit` this config map.\n#\n# These sample
+      configuration options may be copied out of\n# this example block and
+      unindented to be in the data block\n# to actually change the
+      configuration.\n\n# default-timeout-minutes contains the default number
+      of\n# minutes to use for TaskRun and PipelineRun, if none is
+      specified.\ndefault-timeout-minutes: \"60\"  # 60 minutes\n\n#
+      default-service-account contains the default service account name\n# to
+      use for TaskRun and PipelineRun, if none is
+      specified.\ndefault-service-account: \"default\"\n\n#
+      default-managed-by-label-value contains the default value given to the\n#
+      \"app.kubernetes.io/managed-by\" label applied to all Pods created for\n#
+      TaskRuns. If a user's requested TaskRun specifies another value for
+      this\n# label, the user's request
+      supercedes.\ndefault-managed-by-label-value: \"tekton-pipelines\"\n\n#
+      default-pod-template contains the default pod template to use\n# TaskRun
+      and PipelineRun, if none is specified. If a pod template\n# is specified,
+      the default pod template is ignored.\n# default-pod-template:\n\n#
+      default-cloud-events-sink contains the default CloudEvents sink to be\n#
+      used for TaskRun and PipelineRun, when no sink is specified.\n# Note that
+      right now it is still not possible to set a PipelineRun or\n# TaskRun
+      specific sink, so the default is the only option available.\n# If no sink
+      is specified, no CloudEvent is generated\n#
+      default-cloud-events-sink:\n\n# default-task-run-workspace-binding
+      contains the default workspace\n# configuration provided for any
+      Workspaces that a Task declares\n# but that a TaskRun does not explicitly
+      provide.\n# default-task-run-workspace-binding: |\n#   emptyDir:
+      {}\n"},"kind":"ConfigMap","metadata":{"annotations":{},"labels":{"app.kubernetes.io/instance":"default","app.kubernetes.io/part-of":"tekton-pipelines"},"name":"config-defaults","namespace":"tekton-pipelines"}}
+data:
+  _example: |
+    ################################
+    #                              #
+    #    EXAMPLE CONFIGURATION     #
+    #                              #
+    ################################
+
+    # This block is not actually functional configuration,
+    # but serves to illustrate the available configuration
+    # options and document them in a way that is accessible
+    # to users that `kubectl edit` this config map.
+    #
+    # These sample configuration options may be copied out of
+    # this example block and unindented to be in the data block
+    # to actually change the configuration.
+
+    # default-timeout-minutes contains the default number of
+    # minutes to use for TaskRun and PipelineRun, if none is specified.
+    default-timeout-minutes: "60"  # 60 minutes
+
+    # default-service-account contains the default service account name
+    # to use for TaskRun and PipelineRun, if none is specified.
+    default-service-account: "default"
+
+    # default-managed-by-label-value contains the default value given to the
+    # "app.kubernetes.io/managed-by" label applied to all Pods created for
+    # TaskRuns. If a user's requested TaskRun specifies another value for this
+    # label, the user's request supercedes.
+    default-managed-by-label-value: "tekton-pipelines"
+
+    # default-pod-template contains the default pod template to use
+    # TaskRun and PipelineRun, if none is specified. If a pod template
+    # is specified, the default pod template is ignored.
+    # default-pod-template:
+
+    # default-cloud-events-sink contains the default CloudEvents sink to be
+    # used for TaskRun and PipelineRun, when no sink is specified.
+    # Note that right now it is still not possible to set a PipelineRun or
+    # TaskRun specific sink, so the default is the only option available.
+    # If no sink is specified, no CloudEvent is generated
+    # default-cloud-events-sink:
+
+    # default-task-run-workspace-binding contains the default workspace
+    # configuration provided for any Workspaces that a Task declares
+    # but that a TaskRun does not explicitly provide.
+    # default-task-run-workspace-binding: |
+    #   emptyDir: {}
+  default-service-account: pipeline

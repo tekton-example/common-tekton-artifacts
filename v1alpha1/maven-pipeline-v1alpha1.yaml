@@ -1,0 +1,101 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: maven-pipeline
+spec:
+  workspaces:
+  - name: local-maven-repo
+  resources:
+  - name: dependency-git
+    type: git
+  params:
+  - name: deployment-name
+    type: string
+    description: The name of the deployment
+  - name: IMAGE
+    type: string
+    description: Output image name for application to be saved in registry
+  - name: app-git-url
+    type: string
+    description: Repository with source code and Dockerfile at root
+  - name: app-git-revision
+    type: string
+    default: master
+    description: The branch of the repository to deploy
+  - name: app-git-subdirectory
+    type: string
+    description: Location of source code within repo (include leading /)
+    default: ""
+  - name: repo-folder-name
+    type: string
+    default: app-git-clone
+  - name: DOCKERFILE_PATH
+    type: string
+    default: ./Dockerfile
+  tasks:
+  - name: git-clone
+    taskRef:
+      name: git-clone
+    params:
+    - name: url
+      value: $(params.app-git-url)
+    - name: subdirectory
+      value: $(params.repo-folder-name)
+    - name: revision
+      value: $(params.app-git-revision)
+    workspaces:
+    - name: output
+      workspace: local-maven-repo
+  - name: maven-dependency-build
+    runAfter:
+      - git-clone
+    taskRef:
+      name: maven-build
+    resources:
+      inputs:
+      - name: source
+        resource: dependency-git
+    params:
+    - name: GOALS
+      value: ["-DskipTests","clean","install"]
+    workspaces:
+    - name: local-maven-repo
+      workspace: local-maven-repo
+  - name: build-maven-image
+    runAfter:
+      - maven-dependency-build
+    taskRef:
+      name: build-maven-image
+    params:
+    - name: GOALS
+      value: ["-DskipTests", "clean", "package"]
+    - name: IMAGE
+      value: "$(params.IMAGE)"
+    - name: CONTEXT
+      value: $(params.repo-folder-name)$(params.app-git-subdirectory)
+    - name: DOCKERFILE
+      value: $(params.DOCKERFILE_PATH)
+    workspaces:
+    - name: local-maven-repo
+      workspace: local-maven-repo
+  - name: apply-manifests
+    taskRef:
+      name: apply-manifests
+    params:
+      - name: manifest_dir
+        value: $(params.repo-folder-name)$(params.app-git-subdirectory)/k8s
+    workspaces:
+    - name: local-maven-repo
+      workspace: local-maven-repo
+    runAfter:
+    - build-maven-image
+  - name: update-deployment
+    taskRef:
+      name: update-deployment
+    params:
+    - name: deployment
+      value: $(params.deployment-name)
+    - name: IMAGE
+      value: $(params.IMAGE)
+    runAfter:
+    - apply-manifests
