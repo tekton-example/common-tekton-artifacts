@@ -134,4 +134,5 @@ spec:
       args:
         - -s
         - $(workspaces.source.path)/settings.xml
+        - -Dmaven.repo.local=$(workspaces.source.path)
         - "$(params.GOALS)"
